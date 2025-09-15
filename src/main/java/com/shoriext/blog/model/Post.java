@@ -30,7 +30,7 @@ public class Post {
     @NotBlank(message = "Title cannot be empty")
     @Size(min = 2, max = 100, message = "Title must be between 2 and 100 characters")
     @Column(name = "titel", nullable = false)
-    private String titel;
+    private String title;
 
     @NotBlank(message = "Content cannot be empty")
     @Size(min = 10, message = "Content must be at least 10 characters long")

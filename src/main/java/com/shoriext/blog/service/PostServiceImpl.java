@@ -41,7 +41,7 @@ public class PostServiceImpl implements PostService {
         Post post = postRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Post not found with id: " + id));
 
-        post.setTitel(postDetails.getTitel());
+        post.setTitle(postDetails.getTitle());
         post.setContent(postDetails.getContent());
         post.setAuthor(postDetails.getAuthor());
 
