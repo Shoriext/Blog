@@ -19,4 +19,6 @@ public interface PostService {
     Post updatePost(Long id, Post postDetails);
 
     void deletePost(Long id);
+
+    User getCurrentUser();
 }
