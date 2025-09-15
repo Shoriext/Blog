@@ -1,7 +1,5 @@
 package com.shoriext.blog.service;
 
-import java.beans.Transient;
-
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
