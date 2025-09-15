@@ -1,5 +1,7 @@
 package com.shoriext.blog.dto;
 
+import com.shoriext.blog.model.User;
+
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
@@ -15,5 +17,5 @@ public class PostDto {
     @Size(min = 10, message = "Content must be at least 10 characters long")
     private String content;
 
-    private String author;
+    private User user;
 }

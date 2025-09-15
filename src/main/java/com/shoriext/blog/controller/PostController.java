@@ -54,7 +54,7 @@ public class PostController {
         Post post = new Post();
         post.setTitle(postDto.getTitle());
         post.setContent(postDto.getContent());
-        post.setAuthor(postDto.getAuthor());
+        post.setUser(postDto.getUser());
 
         Post savedPost = postServiceImpl.createPost(post);
 
@@ -69,7 +69,7 @@ public class PostController {
         Post postDetails = new Post();
         postDetails.setTitle(postDto.getTitle());
         postDetails.setContent(postDto.getContent());
-        postDetails.setAuthor(postDto.getAuthor());
+        postDetails.setUser(postDto.getUser());
 
         Post updatePost = postServiceImpl.updatePost(id, postDetails);
         return ResponseEntity.ok(convertToResponse(updatePost));
@@ -88,7 +88,7 @@ public class PostController {
                 post.getId(),
                 post.getTitle(),
                 post.getContent(),
-                post.getAuthor(),
+                post.getUser(),
                 post.getCreatedAt(),
                 post.getUpdatedAt());
     }
