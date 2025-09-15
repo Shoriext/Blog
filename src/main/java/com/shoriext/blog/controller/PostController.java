@@ -47,7 +47,7 @@ public class PostController {
     }
 
     // POST /api/posts -> Создать новый пост
-    @PostMapping("path")
+    @PostMapping
     public ResponseEntity<PostResponse> createPost(@Valid @RequestBody PostDto postDto) {
         // Конвертируем DTO в Entity
         Post post = new Post();
