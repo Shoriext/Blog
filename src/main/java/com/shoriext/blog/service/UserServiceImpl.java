@@ -23,12 +23,22 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public User registerNewUser(SignUpDto signUpDto) {
-        if (userRepository.existsByUsername(signUpDto.getUsername())) {
+        boolean usernameExists = userRepository.existsByUsername(signUpDto.getUsername());
+        boolean emailExists = userRepository.existsByEmail(signUpDto.getEmail());
+
+        if (usernameExists) {
             throw new ResourceAlreadyExistsException("Username is already taken!");
         }
-        if (userRepository.existsByEmail(signUpDto.getEmail())) {
+        if (emailExists) {
             throw new ResourceAlreadyExistsException("Email is already in use!");
         }
+
+        User user = new User();
+        user.setUsername(signUpDto.getUsername());
+        user.setEmail(signUpDto.getEmail());
+        user.setPassword(passwordEncoder.encode(signUpDto.getPassword()));
+
+        return userRepository.save(user);
     }
 
 }
