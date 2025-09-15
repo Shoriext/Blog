@@ -14,6 +14,7 @@ import org.springframework.http.ResponseEntity;
 
 import com.shoriext.blog.dto.PostDto;
 import com.shoriext.blog.dto.PostResponse;
+import com.shoriext.blog.exception.ResourceNotFoundException;
 import com.shoriext.blog.model.Post;
 import com.shoriext.blog.service.PostServiceImpl;
 
@@ -42,7 +43,7 @@ public class PostController {
     @GetMapping("/{id}")
     public ResponseEntity<PostResponse> getPostById(@PathVariable Long id) {
         Post post = postServiceImpl.getPostById(id)
-                .orElseThrow(() -> new RuntimeException("Post not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Post not found" + id));
         return ResponseEntity.ok(convertToResponse(post));
     }
 
