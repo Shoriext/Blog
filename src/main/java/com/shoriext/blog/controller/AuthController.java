@@ -4,7 +4,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.shoriext.blog.dto.SignUpDto;
-import com.shoriext.blog.service.UserService;
 import com.shoriext.blog.service.UserServiceImpl;
 
 import jakarta.validation.Valid;
