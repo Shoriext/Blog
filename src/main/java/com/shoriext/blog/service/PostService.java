@@ -4,12 +4,13 @@ import java.util.List;
 import java.util.Optional;
 
 import com.shoriext.blog.model.Post;
+import com.shoriext.blog.model.User;
 
 public interface PostService {
 
     List<Post> getAllPosts();
 
-    List<Post> getPostsByAuthor(String author);
+    List<Post> getPostsByAuthor(User user);
 
     Optional<Post> getPostById(Long id);
 

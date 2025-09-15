@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import com.shoriext.blog.exception.ResourceNotFoundException;
 import com.shoriext.blog.model.Post;
+import com.shoriext.blog.model.User;
 import com.shoriext.blog.repository.PostRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -23,8 +24,8 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public List<Post> getPostsByAuthor(String author) {
-        return postRepository.findByAuthorOrderByCreatedAtDesc(author);
+    public List<Post> getPostsByAuthor(User user) {
+        return postRepository.findByUserOrderByCreatedAtDesc(user);
     }
 
     @Override
