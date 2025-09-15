@@ -1,7 +1,7 @@
 package com.shoriext.blog.dto;
 
 import java.time.LocalDateTime;
-import com.shoriext.blog.model.User;
+
 import lombok.Data;
 
 @Data
@@ -9,7 +9,7 @@ public class PostResponse {
     private Long id;
     private String title;
     private String content;
-    private User user;
+    private String usernmae;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
@@ -17,13 +17,13 @@ public class PostResponse {
             Long id,
             String title,
             String content,
-            User user,
+            String usernmae,
             LocalDateTime createdAt,
             LocalDateTime updatedAt) {
         this.id = id;
         this.title = title;
         this.content = content;
-        this.user = user;
+        this.usernmae = usernmae;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
     }

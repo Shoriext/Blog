@@ -54,11 +54,11 @@ public class PostController {
         Post post = new Post();
         post.setTitle(postDto.getTitle());
         post.setContent(postDto.getContent());
-        post.setUser(postDto.getUser());
 
         Post savedPost = postServiceImpl.createPost(post);
 
-        return new ResponseEntity<>(convertToResponse(savedPost), HttpStatus.CREATED);
+        PostResponse response = convertToResponse(savedPost);
+        return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
     // PUT /api/posts/{id} -> Обновить пост
@@ -88,7 +88,7 @@ public class PostController {
                 post.getId(),
                 post.getTitle(),
                 post.getContent(),
-                post.getUser(),
+                post.getUser().getUsername(),
                 post.getCreatedAt(),
                 post.getUpdatedAt());
     }
