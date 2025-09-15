@@ -5,6 +5,7 @@ import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
+import com.shoriext.blog.exception.ResourceNotFoundException;
 import com.shoriext.blog.model.Post;
 import com.shoriext.blog.repository.PostRepository;
 
@@ -39,7 +40,7 @@ public class PostServiceImpl implements PostService {
     @Override
     public Post updatePost(Long id, Post postDetails) {
         Post post = postRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Post not found with id: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Post not found with id: " + id));
 
         post.setTitle(postDetails.getTitle());
         post.setContent(postDetails.getContent());
@@ -51,7 +52,7 @@ public class PostServiceImpl implements PostService {
     @Override
     public void deletePost(Long id) {
         Post post = postRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Post not found with id: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Post not found with id: " + id));
 
         postRepository.delete(post);
     }
