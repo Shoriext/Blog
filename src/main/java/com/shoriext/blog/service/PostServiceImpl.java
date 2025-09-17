@@ -14,6 +14,7 @@ import com.shoriext.blog.model.User;
 import com.shoriext.blog.repository.PostRepository;
 import com.shoriext.blog.repository.UserRepository;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -45,21 +46,34 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
+    @Transactional
     public Post updatePost(Long id, Post postDetails) {
         Post post = postRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Post not found with id: " + id));
 
+        User currentUser = getCurrentUser();
+
+        if (!post.getUser().getId().equals(currentUser.getId())) {
+            throw new RuntimeException("Access denied: You can only edit your own posts");
+        }
+
         post.setTitle(postDetails.getTitle());
         post.setContent(postDetails.getContent());
-        post.setUser(postDetails.getUser());
 
         return postRepository.save(post);
     }
 
     @Override
+    @Transactional
     public void deletePost(Long id) {
         Post post = postRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Post not found with id: " + id));
+
+        User currentUser = getCurrentUser();
+
+        if (!post.getUser().getId().equals(currentUser.getId())) {
+            throw new RuntimeException("Access denied: You can only edit your own posts");
+        }
 
         postRepository.delete(post);
     }
