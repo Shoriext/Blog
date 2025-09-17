@@ -3,7 +3,10 @@ package com.shoriext.blog.controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.shoriext.blog.dto.PostResponse;
 import com.shoriext.blog.dto.SignUpDto;
+import com.shoriext.blog.dto.UserResponseDto;
+import com.shoriext.blog.model.Post;
 import com.shoriext.blog.model.User;
 import com.shoriext.blog.repository.UserRepository;
 import com.shoriext.blog.service.UserServiceImpl;
@@ -11,7 +14,8 @@ import com.shoriext.blog.service.UserServiceImpl;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
-import java.net.Authenticator;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,7 +25,6 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -39,14 +42,30 @@ public class AuthController {
     }
 
     @GetMapping("/me")
-    public ResponseEntity<User> getCurrentUser() {
+    public ResponseEntity<UserResponseDto> getCurrentUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String username = authentication.getName();
 
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found: " + username));
 
-        return ResponseEntity.ok(user);
+        List<Post> posts = user.getPosts();
+        List<PostResponse> postDtos = new ArrayList<>();
+
+        for (Post post : posts) {
+            PostResponse temPost = new PostResponse();
+            temPost.setId(post.getId());
+            temPost.setTitle(post.getTitle());
+            temPost.setContent(post.getContent());
+            temPost.setUsernmae(post.getUser().getUsername());
+            temPost.setCreatedAt(post.getCreatedAt());
+            temPost.setUpdatedAt(post.getUpdatedAt());
+            postDtos.add(temPost);
+
+        }
+        UserResponseDto userResponseDto = new UserResponseDto(user.getId(), user.getUsername(), user.getEmail(),
+                postDtos);
+        return ResponseEntity.ok(userResponseDto);
     }
 
 }

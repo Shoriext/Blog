@@ -13,6 +13,9 @@ public class PostResponse {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
+    public PostResponse() {
+    }
+
     public PostResponse(
             Long id,
             String title,
