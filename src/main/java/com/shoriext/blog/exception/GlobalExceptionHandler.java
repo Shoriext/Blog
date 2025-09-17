@@ -30,4 +30,9 @@ public class GlobalExceptionHandler {
     public ResponseEntity<String> handleResourceAlreadyExists(ResourceAlreadyExistsException ex) {
         return new ResponseEntity<>(ex.getMessage(), HttpStatus.CONFLICT); // 409 Conflict
     }
+
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<String> handleAccessDenied(AccessDeniedException ex) {
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.FORBIDDEN); // 403 Forbidden
+    }
 }
