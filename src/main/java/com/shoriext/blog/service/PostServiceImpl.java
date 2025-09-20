@@ -8,6 +8,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+
+import com.shoriext.blog.exception.AccessDeniedException;
 import com.shoriext.blog.exception.ResourceNotFoundException;
 import com.shoriext.blog.model.Post;
 import com.shoriext.blog.model.User;
@@ -53,8 +55,8 @@ public class PostServiceImpl implements PostService {
 
         User currentUser = getCurrentUser();
 
-        if (!post.getUser().getId().equals(currentUser.getId())) {
-            throw new RuntimeException("Access denied: You can only edit your own posts");
+        if (!post.getUser().getId().equals(currentUser.getId()) && !currentUser.getRoles().contains("ROLE_ADMIN")) {
+            throw new AccessDeniedException("Access denied: You can only edit your own posts");
         }
 
         post.setTitle(postDetails.getTitle());
@@ -71,8 +73,8 @@ public class PostServiceImpl implements PostService {
 
         User currentUser = getCurrentUser();
 
-        if (!post.getUser().getId().equals(currentUser.getId())) {
-            throw new RuntimeException("Access denied: You can only edit your own posts");
+        if (!post.getUser().getId().equals(currentUser.getId()) && !currentUser.getRoles().contains("ROLE_ADMIN")) {
+            throw new AccessDeniedException("Access denied: You can only edit your own posts");
         }
 
         postRepository.delete(post);
