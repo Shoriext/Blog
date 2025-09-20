@@ -27,4 +27,9 @@ public interface PostRepository extends JpaRepository<Post, Long> {
 
     Page<Post> findByAuthorOrderByCreatedAtDesc(String author, Pageable pageable);
 
+    Page<Post> findByTitleContainingIgnoreCase(String title, Pageable pageable);
+
+    Page<Post> findByTitleContainingIgnoreCaseOrContentContainingIgnoreCase(String title, String content,
+            Pageable pageable);
+
 }
