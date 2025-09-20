@@ -12,6 +12,8 @@ public class PostResponse {
     private String usernmae;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+    private Long likesCount;
+    private boolean likedByCurrentUser;
 
     public PostResponse() {
     }
@@ -22,12 +24,16 @@ public class PostResponse {
             String content,
             String usernmae,
             LocalDateTime createdAt,
-            LocalDateTime updatedAt) {
+            LocalDateTime updatedAt,
+            Long likesCount,
+            boolean likedByCurrentUser) {
         this.id = id;
         this.title = title;
         this.content = content;
         this.usernmae = usernmae;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
+        this.likesCount = likesCount;
+        this.likedByCurrentUser = likedByCurrentUser;
     }
 }

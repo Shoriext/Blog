@@ -21,6 +21,8 @@ import com.shoriext.blog.dto.PostDto;
 import com.shoriext.blog.dto.PostResponse;
 import com.shoriext.blog.exception.ResourceNotFoundException;
 import com.shoriext.blog.model.Post;
+import com.shoriext.blog.service.LikeService;
+import com.shoriext.blog.service.LikeServiceImpl;
 import com.shoriext.blog.service.PostServiceImpl;
 
 import jakarta.validation.Valid;
@@ -32,6 +34,7 @@ import lombok.RequiredArgsConstructor;
 public class PostController {
 
     private final PostServiceImpl postServiceImpl;
+    private final LikeServiceImpl likeService;
 
     // GET /api/posts -> Получить все посты
     @GetMapping
@@ -120,13 +123,17 @@ public class PostController {
 
     // Вспомогательный метод для конвертации Entity в Response DTO
     private PostResponse convertToResponse(Post post) {
+        long likesCount = likeService.getLikesCount(post.getId());
+        boolean isLiked = likeService.isPostLikedByCurrentUser(post.getId());
         return new PostResponse(
                 post.getId(),
                 post.getTitle(),
                 post.getContent(),
                 post.getUser().getUsername(),
                 post.getCreatedAt(),
-                post.getUpdatedAt());
+                post.getUpdatedAt(),
+                likesCount,
+                isLiked);
     }
 
 }
