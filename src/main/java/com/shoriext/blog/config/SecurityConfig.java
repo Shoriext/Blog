@@ -24,12 +24,21 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http.csrf(csrf -> csrf.disable())
+        http
+                .csrf(csrf -> csrf.disable())
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(authz -> authz
+                        .requestMatchers("/h2-console/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/auth/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/posts/**").permitAll()
+                        // Настройка доступа для удаления поста: только владелец или ADMIN
+                        .requestMatchers(HttpMethod.DELETE, "/api/posts/**").hasAnyRole("USER", "ADMIN")
+                        // Для создания и обновления поста достаточно роли USER
+                        .requestMatchers(HttpMethod.POST, "/api/posts").hasRole("USER")
+                        .requestMatchers(HttpMethod.PUT, "/api/posts/**").hasRole("USER")
+                        // Пример: endpoint для админов (который мы maybe добавим позже)
+                        .requestMatchers("/api/admin/**").hasRole("ADMIN")
                         .anyRequest().authenticated())
                 .httpBasic(httpBasic -> {
                 });
