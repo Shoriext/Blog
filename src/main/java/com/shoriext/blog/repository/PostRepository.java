@@ -25,4 +25,6 @@ public interface PostRepository extends JpaRepository<Post, Long> {
     // Метод с пагинацией и сортировкой по дате (новые сначала)
     Page<Post> findAllByOrderByCreatedAtDesc(Pageable pageable);
 
+    Page<Post> findByAuthorOrderByCreatedAtDesc(String author, Pageable pageable);
+
 }
