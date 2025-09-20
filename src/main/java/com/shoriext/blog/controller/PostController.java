@@ -21,7 +21,6 @@ import com.shoriext.blog.dto.PostDto;
 import com.shoriext.blog.dto.PostResponse;
 import com.shoriext.blog.exception.ResourceNotFoundException;
 import com.shoriext.blog.model.Post;
-import com.shoriext.blog.service.LikeService;
 import com.shoriext.blog.service.LikeServiceImpl;
 import com.shoriext.blog.service.PostServiceImpl;
 
