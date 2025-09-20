@@ -26,8 +26,6 @@ import com.shoriext.blog.service.PostServiceImpl;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
-import java.util.List;
-
 @RestController
 @RequestMapping("/api/posts")
 @RequiredArgsConstructor
@@ -102,6 +100,19 @@ public class PostController {
 
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Order.desc("createdAt")));
         Page<Post> postsPage = postServiceImpl.searchPosts(query, pageable);
+        Page<PostResponse> responsePage = postsPage.map(this::convertToResponse);
+
+        return ResponseEntity.ok(new PagedResponse<>(responsePage));
+    }
+
+    @GetMapping("/user/{username}")
+    public ResponseEntity<PagedResponse<PostResponse>> getPostsByUser(
+            @PathVariable String username,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Order.desc("createdAt")));
+        Page<Post> postsPage = postServiceImpl.getPostsByUsername(username, pageable);
         Page<PostResponse> responsePage = postsPage.map(this::convertToResponse);
 
         return ResponseEntity.ok(new PagedResponse<>(responsePage));

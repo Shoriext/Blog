@@ -34,11 +34,6 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public List<Post> getPostsByAuthor(User user) {
-        return postRepository.findByUserOrderByCreatedAtDesc(user);
-    }
-
-    @Override
     public Optional<Post> getPostById(Long id) {
         return postRepository.findById(id);
     }
@@ -101,8 +96,8 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public Page<Post> getPostsByAuthor(String author, Pageable pageable) {
-        return postRepository.findByAuthorOrderByCreatedAtDesc(author, pageable);
+    public Page<Post> getPostsByUsername(String username, Pageable pageable) {
+        return postRepository.findByUser_UsernameOrderByCreatedAtDesc(username, pageable);
     }
 
     @Override

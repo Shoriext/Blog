@@ -13,8 +13,6 @@ public interface PostService {
 
     List<Post> getAllPosts();
 
-    List<Post> getPostsByAuthor(User user);
-
     Optional<Post> getPostById(Long id);
 
     Post createPost(Post post);
@@ -27,7 +25,7 @@ public interface PostService {
 
     Page<Post> getAllPosts(Pageable pageable);
 
-    Page<Post> getPostsByAuthor(String author, Pageable pageable);
-
     Page<Post> searchPosts(String query, Pageable pageable);
+
+    Page<Post> getPostsByUsername(String username, Pageable pageable);
 }
