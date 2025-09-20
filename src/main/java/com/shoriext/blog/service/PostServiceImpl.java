@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import com.shoriext.blog.dto.PostResponse;
 import com.shoriext.blog.exception.AccessDeniedException;
 import com.shoriext.blog.exception.ResourceNotFoundException;
 import com.shoriext.blog.model.Post;
@@ -22,6 +23,7 @@ public class PostServiceImpl implements PostService {
 
     private final PostRepository postRepository;
     private final UserServiceImpl userService;
+    private final LikeServiceImpl likeService;
 
     @Override
     public List<Post> getAllPosts() {
@@ -86,5 +88,22 @@ public class PostServiceImpl implements PostService {
     public Page<Post> searchPosts(String query, Pageable pageable) {
         return postRepository.findByTitleContainingIgnoreCaseOrContentContainingIgnoreCase(
                 query, query, pageable);
+    }
+
+    // Вспомогательный метод для конвертации Entity в Response DTO
+    @Override
+    public PostResponse convertToResponse(Post post) {
+        long likesCount = likeService.getLikesCount(post.getId());
+        boolean isLikedByCurrentUser = likeService.isPostLikedByCurrentUser(post.getId());
+        return PostResponse.builder()
+                .id(post.getId())
+                .title(post.getTitle())
+                .content(post.getContent())
+                .username(post.getUser().getUsername())
+                .createdAt(post.getCreatedAt())
+                .updatedAt(post.getUpdatedAt())
+                .likesCount(likesCount)
+                .likedByCurrentUser(isLikedByCurrentUser)
+                .build();
     }
 }

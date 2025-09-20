@@ -6,6 +6,7 @@ import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import com.shoriext.blog.dto.PostResponse;
 import com.shoriext.blog.model.Post;
 
 public interface PostService {
@@ -25,4 +26,6 @@ public interface PostService {
     Page<Post> searchPosts(String query, Pageable pageable);
 
     Page<Post> getPostsByUsername(String username, Pageable pageable);
+
+    PostResponse convertToResponse(Post post);
 }

@@ -11,6 +11,8 @@ import com.shoriext.blog.model.Post;
 import com.shoriext.blog.model.User;
 import com.shoriext.blog.repository.UserRepository;
 import com.shoriext.blog.security.JwtUtils;
+import com.shoriext.blog.service.LikeService;
+import com.shoriext.blog.service.LikeServiceImpl;
 import com.shoriext.blog.service.UserServiceImpl;
 
 import jakarta.validation.Valid;
@@ -37,14 +39,15 @@ import org.springframework.web.bind.annotation.GetMapping;
 @RequiredArgsConstructor
 public class AuthController {
 
-    private final UserServiceImpl userServiceImpl;
+    private final UserServiceImpl userService;
+    private final LikeServiceImpl likeService;
     private final UserRepository userRepository;
     private final AuthenticationManager authenticationManager;
     private final JwtUtils jwtUtils;
 
     @PostMapping("/singup")
     public ResponseEntity<String> registerUser(@Valid @RequestBody SignUpDto signUpDto) {
-        userServiceImpl.registerNewUser(signUpDto);
+        userService.registerNewUser(signUpDto);
 
         return new ResponseEntity<>("User registered successfully!", HttpStatus.CREATED);
     }
@@ -61,13 +64,19 @@ public class AuthController {
         List<PostResponse> postDtos = new ArrayList<>();
 
         for (Post post : posts) {
-            PostResponse temPost = new PostResponse();
-            temPost.setId(post.getId());
-            temPost.setTitle(post.getTitle());
-            temPost.setContent(post.getContent());
-            temPost.setUsernmae(post.getUser().getUsername());
-            temPost.setCreatedAt(post.getCreatedAt());
-            temPost.setUpdatedAt(post.getUpdatedAt());
+            long likesCount = likeService.getLikesCount(post.getId());
+            boolean isLikedByCurrentUser = likeService.isPostLikedByCurrentUser(post.getId());
+            PostResponse temPost = PostResponse.builder()
+                    .id(post.getId())
+                    .title(post.getTitle())
+                    .content(post.getContent())
+                    .username(post.getUser().getUsername())
+                    .createdAt(post.getCreatedAt())
+                    .updatedAt(post.getUpdatedAt())
+                    .likesCount(likesCount)
+                    .likedByCurrentUser(isLikedByCurrentUser)
+                    .build();
+
             postDtos.add(temPost);
 
         }

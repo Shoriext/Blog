@@ -21,7 +21,7 @@ import com.shoriext.blog.dto.PostDto;
 import com.shoriext.blog.dto.PostResponse;
 import com.shoriext.blog.exception.ResourceNotFoundException;
 import com.shoriext.blog.model.Post;
-import com.shoriext.blog.service.LikeServiceImpl;
+
 import com.shoriext.blog.service.PostServiceImpl;
 
 import jakarta.validation.Valid;
@@ -32,8 +32,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class PostController {
 
-    private final PostServiceImpl postServiceImpl;
-    private final LikeServiceImpl likeService;
+    private final PostServiceImpl postService;
 
     // GET /api/posts -> Получить все посты
     @GetMapping
@@ -44,9 +43,9 @@ public class PostController {
 
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Order.desc("createdAt")));
 
-        Page<Post> postsPage = postServiceImpl.getAllPosts(pageable);
+        Page<Post> postsPage = postService.getAllPosts(pageable);
 
-        Page<PostResponse> responsePage = postsPage.map(this::convertToResponse);
+        Page<PostResponse> responsePage = postsPage.map(postService::convertToResponse);
 
         return ResponseEntity.ok(new PagedResponse<>(responsePage));
     }
@@ -54,9 +53,9 @@ public class PostController {
     // GET /api/posts/{id} -> Получить пост по ID
     @GetMapping("/{id}")
     public ResponseEntity<PostResponse> getPostById(@PathVariable Long id) {
-        Post post = postServiceImpl.getPostById(id)
+        Post post = postService.getPostById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Post not found" + id));
-        return ResponseEntity.ok(convertToResponse(post));
+        return ResponseEntity.ok(postService.convertToResponse(post));
     }
 
     // POST /api/posts -> Создать новый пост
@@ -67,9 +66,9 @@ public class PostController {
         post.setTitle(postDto.getTitle());
         post.setContent(postDto.getContent());
 
-        Post savedPost = postServiceImpl.createPost(post);
+        Post savedPost = postService.createPost(post);
 
-        PostResponse response = convertToResponse(savedPost);
+        PostResponse response = postService.convertToResponse(savedPost);
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
@@ -83,14 +82,14 @@ public class PostController {
         postDetails.setContent(postDto.getContent());
         postDetails.setUser(postDto.getUser());
 
-        Post updatePost = postServiceImpl.updatePost(id, postDetails);
-        return ResponseEntity.ok(convertToResponse(updatePost));
+        Post updatePost = postService.updatePost(id, postDetails);
+        return ResponseEntity.ok(postService.convertToResponse(updatePost));
     }
 
     // DELETE /api/posts/{id} -> Удалить пост
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deletePost(@PathVariable Long id) {
-        postServiceImpl.deletePost(id);
+        postService.deletePost(id);
         return ResponseEntity.noContent().build();
     }
 
@@ -101,8 +100,8 @@ public class PostController {
             @RequestParam(defaultValue = "10") int size) {
 
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Order.desc("createdAt")));
-        Page<Post> postsPage = postServiceImpl.searchPosts(query, pageable);
-        Page<PostResponse> responsePage = postsPage.map(this::convertToResponse);
+        Page<Post> postsPage = postService.searchPosts(query, pageable);
+        Page<PostResponse> responsePage = postsPage.map(postService::convertToResponse);
 
         return ResponseEntity.ok(new PagedResponse<>(responsePage));
     }
@@ -114,25 +113,10 @@ public class PostController {
             @RequestParam(defaultValue = "10") int size) {
 
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Order.desc("createdAt")));
-        Page<Post> postsPage = postServiceImpl.getPostsByUsername(username, pageable);
-        Page<PostResponse> responsePage = postsPage.map(this::convertToResponse);
+        Page<Post> postsPage = postService.getPostsByUsername(username, pageable);
+        Page<PostResponse> responsePage = postsPage.map(postService::convertToResponse);
 
         return ResponseEntity.ok(new PagedResponse<>(responsePage));
-    }
-
-    // Вспомогательный метод для конвертации Entity в Response DTO
-    private PostResponse convertToResponse(Post post) {
-        long likesCount = likeService.getLikesCount(post.getId());
-        boolean isLiked = likeService.isPostLikedByCurrentUser(post.getId());
-        return new PostResponse(
-                post.getId(),
-                post.getTitle(),
-                post.getContent(),
-                post.getUser().getUsername(),
-                post.getCreatedAt(),
-                post.getUpdatedAt(),
-                likesCount,
-                isLiked);
     }
 
 }
