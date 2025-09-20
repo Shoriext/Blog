@@ -104,4 +104,10 @@ public class PostServiceImpl implements PostService {
     public Page<Post> getPostsByAuthor(String author, Pageable pageable) {
         return postRepository.findByAuthorOrderByCreatedAtDesc(author, pageable);
     }
+
+    @Override
+    public Page<Post> searchPosts(String query, Pageable pageable) {
+        return postRepository.findByTitleContainingIgnoreCaseOrContentContainingIgnoreCase(
+                query, query, pageable);
+    }
 }

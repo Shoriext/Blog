@@ -28,4 +28,6 @@ public interface PostService {
     Page<Post> getAllPosts(Pageable pageable);
 
     Page<Post> getPostsByAuthor(String author, Pageable pageable);
+
+    Page<Post> searchPosts(String query, Pageable pageable);
 }
