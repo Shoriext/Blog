@@ -1,5 +1,7 @@
 package com.shoriext.blog.service;
 
+import java.util.Set;
+
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -35,6 +37,8 @@ public class UserServiceImpl implements UserService {
         user.setUsername(signUpDto.getUsername());
         user.setEmail(signUpDto.getEmail());
         user.setPassword(passwordEncoder.encode(signUpDto.getPassword()));
+
+        user.setRoles(Set.of("ROLE_USER"));
 
         return userRepository.save(user);
     }
