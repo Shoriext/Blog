@@ -7,7 +7,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 import com.shoriext.blog.model.Post;
-import com.shoriext.blog.model.User;
 
 public interface PostService {
 
@@ -20,8 +19,6 @@ public interface PostService {
     Post updatePost(Long id, Post postDetails);
 
     void deletePost(Long id);
-
-    User getCurrentUser();
 
     Page<Post> getAllPosts(Pageable pageable);
 

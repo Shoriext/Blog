@@ -7,4 +7,6 @@ public interface UserService {
     User registerNewUser(SignUpDto signUpDto);
 
     void addRoleToUser(Long userId, String role);
+
+    User getCurrentUser();
 }

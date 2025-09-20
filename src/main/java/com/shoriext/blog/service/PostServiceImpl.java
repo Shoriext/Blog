@@ -6,19 +6,14 @@ import java.util.Optional;
 import org.springframework.stereotype.Service;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
 import com.shoriext.blog.exception.AccessDeniedException;
 import com.shoriext.blog.exception.ResourceNotFoundException;
 import com.shoriext.blog.model.Post;
 import com.shoriext.blog.model.User;
 import com.shoriext.blog.repository.PostRepository;
-import com.shoriext.blog.repository.UserRepository;
 
-import jakarta.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -26,7 +21,7 @@ import lombok.RequiredArgsConstructor;
 public class PostServiceImpl implements PostService {
 
     private final PostRepository postRepository;
-    private final UserRepository userRepository;
+    private final UserServiceImpl userService;
 
     @Override
     public List<Post> getAllPosts() {
@@ -40,7 +35,7 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public Post createPost(Post post) {
-        post.setUser(getCurrentUser());
+        post.setUser(userService.getCurrentUser());
         return postRepository.save(post);
     }
 
@@ -50,7 +45,7 @@ public class PostServiceImpl implements PostService {
         Post post = postRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Post not found with id: " + id));
 
-        User currentUser = getCurrentUser();
+        User currentUser = userService.getCurrentUser();
 
         if (!post.getUser().getId().equals(currentUser.getId()) && !currentUser.getRoles().contains("ROLE_ADMIN")) {
             throw new AccessDeniedException("Access denied: You can only edit your own posts");
@@ -68,26 +63,13 @@ public class PostServiceImpl implements PostService {
         Post post = postRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Post not found with id: " + id));
 
-        User currentUser = getCurrentUser();
+        User currentUser = userService.getCurrentUser();
 
         if (!post.getUser().getId().equals(currentUser.getId()) && !currentUser.getRoles().contains("ROLE_ADMIN")) {
             throw new AccessDeniedException("Access denied: You can only edit your own posts");
         }
 
         postRepository.delete(post);
-    }
-
-    @Override
-    public User getCurrentUser() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-
-        if (authentication == null || !authentication.isAuthenticated()) {
-            return null;
-        }
-        String userName = ((UserDetails) authentication.getPrincipal()).getUsername();
-
-        return userRepository.findByUsername(userName)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found: " + userName));
     }
 
     @Override
