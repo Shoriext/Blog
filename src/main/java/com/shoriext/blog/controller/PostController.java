@@ -1,6 +1,7 @@
 package com.shoriext.blog.controller;
 
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -8,10 +9,14 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
+import com.shoriext.blog.dto.PagedResponse;
 import com.shoriext.blog.dto.PostDto;
 import com.shoriext.blog.dto.PostResponse;
 import com.shoriext.blog.exception.ResourceNotFoundException;
@@ -32,11 +37,18 @@ public class PostController {
 
     // GET /api/posts -> Получить все посты
     @GetMapping
-    public ResponseEntity<List<PostResponse>> getAllPosts() {
-        List<PostResponse> posts = postServiceImpl.getAllPosts().stream()
-                .map(this::convertToResponse)
-                .toList();
-        return ResponseEntity.ok(posts);
+    public ResponseEntity<PagedResponse<PostResponse>> getAllPosts(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "createdAt,desc") String sort) {
+
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Order.desc("createdAt")));
+
+        Page<Post> postsPage = postServiceImpl.getAllPosts(pageable);
+
+        Page<PostResponse> responsePage = postsPage.map(this::convertToResponse);
+
+        return ResponseEntity.ok(new PagedResponse<>(responsePage));
     }
 
     // GET /api/posts/{id} -> Получить пост по ID
