@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import com.shoriext.blog.dto.SignUpDto;
 import com.shoriext.blog.exception.ResourceAlreadyExistsException;
+import com.shoriext.blog.exception.ResourceNotFoundException;
 import com.shoriext.blog.model.User;
 import com.shoriext.blog.repository.UserRepository;
 
@@ -41,6 +42,16 @@ public class UserServiceImpl implements UserService {
         user.setRoles(Set.of("ROLE_USER"));
 
         return userRepository.save(user);
+    }
+
+    @Override
+    @Transactional
+    public void addRoleToUser(Long userId, String role) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + userId));
+
+        user.getRoles().add(role);
+        userRepository.save(user);
     }
 
 }

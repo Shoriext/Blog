@@ -5,4 +5,6 @@ import com.shoriext.blog.model.User;
 
 public interface UserService {
     User registerNewUser(SignUpDto signUpDto);
+
+    void addRoleToUser(Long userId, String role);
 }
