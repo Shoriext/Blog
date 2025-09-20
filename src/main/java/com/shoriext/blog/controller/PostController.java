@@ -94,6 +94,19 @@ public class PostController {
         return ResponseEntity.noContent().build();
     }
 
+    @GetMapping("/search")
+    public ResponseEntity<PagedResponse<PostResponse>> searchPosts(
+            @RequestParam String query,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Order.desc("createdAt")));
+        Page<Post> postsPage = postServiceImpl.searchPosts(query, pageable);
+        Page<PostResponse> responsePage = postsPage.map(this::convertToResponse);
+
+        return ResponseEntity.ok(new PagedResponse<>(responsePage));
+    }
+
     // Вспомогательный метод для конвертации Entity в Response DTO
     private PostResponse convertToResponse(Post post) {
         return new PostResponse(
