@@ -59,6 +59,18 @@ public class Post {
     @ToString.Exclude
     private List<Comment> comments = new ArrayList<>();
 
+    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @ToString.Exclude
+    private List<Like> likes = new ArrayList<>();
+
+    public long getLikesCount() {
+        return likes.size();
+    }
+
+    public boolean isLikedByUser(User user) {
+        return likes.stream().anyMatch(like -> like.getUser().equals(user));
+    }
+
     @PrePersist
     protected void onCreate() {
         createdAt = LocalDateTime.now();
