@@ -15,6 +15,11 @@ import com.shoriext.blog.service.LikeService;
 import com.shoriext.blog.service.LikeServiceImpl;
 import com.shoriext.blog.service.UserServiceImpl;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
@@ -37,6 +42,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 @RestController
 @RequestMapping("/api/auth")
 @RequiredArgsConstructor
+@Tag(name = "Аутентификация", description = "API для регистрации и аутентификации пользователей")
 public class AuthController {
 
     private final UserServiceImpl userService;
@@ -45,13 +51,16 @@ public class AuthController {
     private final AuthenticationManager authenticationManager;
     private final JwtUtils jwtUtils;
 
-    @PostMapping("/singup")
-    public ResponseEntity<String> registerUser(@Valid @RequestBody SignUpDto signUpDto) {
+    @Operation(summary = "Регистрация нового пользователя", description = "Создает нового пользователя в системе. Пользователь получает роль ROLE_USER по умолчанию.")
+    @PostMapping("/signup")
+    public ResponseEntity<String> registerUser(
+            @Valid @RequestBody SignUpDto signUpDto) {
         userService.registerNewUser(signUpDto);
 
         return new ResponseEntity<>("User registered successfully!", HttpStatus.CREATED);
     }
 
+    @Operation(summary = "Получить текущего пользователя", description = "Возвращает информацию о текущем аутентифицированном пользователе на основе JWT токена.")
     @GetMapping("/me")
     public ResponseEntity<UserResponseDto> getCurrentUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -85,8 +94,10 @@ public class AuthController {
         return ResponseEntity.ok(userResponseDto);
     }
 
+    @Operation(summary = "Аутентификация пользователя", description = "Выполняет вход пользователя и возвращает JWT токен для доступа к защищенным endpoints.")
     @PostMapping("/login")
-    public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginDto loginDto) {
+    public ResponseEntity<?> authenticateUser(
+            @Valid @RequestBody LoginDto loginDto) {
         try {
 
             Authentication authentication = authenticationManager.authenticate(

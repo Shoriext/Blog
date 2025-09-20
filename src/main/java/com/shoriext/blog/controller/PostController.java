@@ -24,21 +24,28 @@ import com.shoriext.blog.model.Post;
 
 import com.shoriext.blog.service.PostServiceImpl;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequestMapping("/api/posts")
 @RequiredArgsConstructor
+@Tag(name = "Посты", description = "API для управления постами блога")
 public class PostController {
 
     private final PostServiceImpl postService;
 
-    // GET /api/posts -> Получить все посты
+    @Operation(summary = "Получить все посты", description = "Возвращает список постов с пагинацией и сортировкой по дате создания (новые сначала).")
     @GetMapping
     public ResponseEntity<PagedResponse<PostResponse>> getAllPosts(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size,
+            int page,
+            int size,
             @RequestParam(defaultValue = "createdAt,desc") String sort) {
 
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Order.desc("createdAt")));
@@ -50,7 +57,7 @@ public class PostController {
         return ResponseEntity.ok(new PagedResponse<>(responsePage));
     }
 
-    // GET /api/posts/{id} -> Получить пост по ID
+    @Operation(summary = "Получить пост по ID", description = "Возвращает подробную информацию о посте по его идентификатору.")
     @GetMapping("/{id}")
     public ResponseEntity<PostResponse> getPostById(@PathVariable Long id) {
         Post post = postService.getPostById(id)
@@ -58,10 +65,11 @@ public class PostController {
         return ResponseEntity.ok(postService.convertToResponse(post));
     }
 
-    // POST /api/posts -> Создать новый пост
+    @Operation(summary = "Создать новый пост", description = "Создает новый пост. Требуется аутентификация. Автор определяется автоматически из JWT токена.", security = @SecurityRequirement(name = "bearerAuth"))
     @PostMapping
-    public ResponseEntity<PostResponse> createPost(@Valid @RequestBody PostDto postDto) {
-        // Конвертируем DTO в Entity
+    public ResponseEntity<PostResponse> createPost(
+            @Valid @RequestBody PostDto postDto) {
+
         Post post = new Post();
         post.setTitle(postDto.getTitle());
         post.setContent(postDto.getContent());
@@ -72,9 +80,11 @@ public class PostController {
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
-    // PUT /api/posts/{id} -> Обновить пост
+    @Operation(summary = "Обновить пост", description = "Обновляет существующий пост. Только автор поста или администратор могут обновлять.", security = @SecurityRequirement(name = "bearerAuth"))
     @PutMapping("/{id}")
-    public ResponseEntity<PostResponse> updatePost(@PathVariable Long id, @Valid @RequestBody PostDto postDto) {
+    public ResponseEntity<PostResponse> updatePost(
+            @PathVariable Long id,
+            @Valid @RequestBody PostDto postDto) {
 
         // Конвертируем DTO в Entity
         Post postDetails = new Post();
@@ -86,13 +96,14 @@ public class PostController {
         return ResponseEntity.ok(postService.convertToResponse(updatePost));
     }
 
-    // DELETE /api/posts/{id} -> Удалить пост
+    @Operation(summary = "Удалить пост", description = "Удаляет пост по ID. Только автор поста или администратор могут удалять.", security = @SecurityRequirement(name = "bearerAuth"))
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deletePost(@PathVariable Long id) {
         postService.deletePost(id);
         return ResponseEntity.noContent().build();
     }
 
+    @Operation(summary = "Поиск постов", description = "Ищет посты по заголовку или содержанию. Возвращает результаты с пагинацией.")
     @GetMapping("/search")
     public ResponseEntity<PagedResponse<PostResponse>> searchPosts(
             @RequestParam String query,
@@ -106,6 +117,7 @@ public class PostController {
         return ResponseEntity.ok(new PagedResponse<>(responsePage));
     }
 
+    @Operation(summary = "Получить посты пользователя", description = "Возвращает все посты конкретного пользователя с пагинацией.")
     @GetMapping("/user/{username}")
     public ResponseEntity<PagedResponse<PostResponse>> getPostsByUser(
             @PathVariable String username,

@@ -1,5 +1,6 @@
 package com.shoriext.blog.config;
 
+import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -44,12 +45,41 @@ public class SecurityConfig {
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(authz -> authz
+                        .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll()
+                        // Swagger UI paths
+                        .requestMatchers(
+                                "/swagger-ui.html",
+                                "/swagger-ui/**",
+                                "/v3/api-docs/**",
+                                "/v3/api-docs.yaml",
+                                "/v3/api-docs",
+                                "/swagger-resources/**",
+                                "/swagger-resources",
+                                "/webjars/**",
+                                "/api-docs/**",
+                                "/api-docs",
+                                "/docs/**",
+                                "/docs",
+                                // Springdoc OpenAPI paths
+                                "/swagger-ui.html",
+                                "/swagger-ui/**",
+                                "/v3/api-docs/**",
+                                "/v3/api-docs",
+                                "/swagger-resources/**",
+                                "/swagger-resources",
+                                "/webjars/**",
+                                "/api-docs/**")
+                        .permitAll()
+                        // H2 Console
                         .requestMatchers("/h2-console/**").permitAll()
+                        // Auth endpoints
                         .requestMatchers("/api/auth/**").permitAll()
+                        // Public GET endpoints
                         .requestMatchers(HttpMethod.GET, "/api/posts/**").permitAll()
                         .anyRequest().authenticated())
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
-                .headers(headers -> headers.frameOptions().disable());
+                .formLogin(form -> form.disable()) // отключаем форму логина
+                .httpBasic(basic -> basic.disable());
 
         return http.build();
     }
